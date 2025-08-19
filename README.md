@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wingo Predictor Premium</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Poppins", sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #141E30, #243B55);
+      color: white;
+    }
+
+    /* Login Page */
+    #loginPage, #mainPage {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0px 8px 25px rgba(0,0,0,0.3);
+      text-align: center;
+      width: 320px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .card h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #0072ff, #00c6ff);
+    }
+
+    /* Main Page */
+    #mainPage {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .prediction-box {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      width: 350px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .prediction-box h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .result {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .timer {
+      margin-top: 10px;
+      font-size: 1rem;
+      color: #ffdd57;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Page -->
+  <div id="loginPage">
+    <div class="card">
+      <h2>Login</h2>
+      <input type="password" id="password" placeholder="Enter Password">
+      <button onclick="checkLogin()">Login</button>
+      <p id="error" style="color:red; margin-top:10px; display:none;">Wrong Password!</p>
+    </div>
+  </div>
+
+  <!-- Main Page -->
+  <div id="mainPage">
+    <div class="prediction-box">
+      <h3>Period</h3>
+      <div class="result" id="period">--</div>
+    </div>
+    <div class="prediction-box">
+      <h3>Big / Small Prediction</h3>
+      <div class="result" id="bigSmallResult">--</div>
+    </div>
+    <div class="prediction-box">
+      <h3>Pickup Number</h3>
+      <div class="result" id="pickupNumber">--</div>
+      <div class="timer">Next update in <span id="timer">00:60</span></div>
+    </div>
+  </div>
+
+  <script>
+    function checkLogin() {
+      let pass = document.getElementById("password").value;
+      if(pass === "VXM@PAPA"){
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("mainPage").style.display = "flex";
+        generatePrediction();
+        updatePeriodAndTimer();
+        setInterval(updatePeriodAndTimer, 1000);
+      } else {
+        document.getElementById("error").style.display = "block";
+      }
+    }
+
+    function generatePrediction() {
+      // Big = 5-9, Small = 0-4
+      let num = Math.floor(Math.random() * 10);
+      let bigSmall = (num >= 5) ? "BIG" : "SMALL";
+
+      document.getElementById("bigSmallResult").innerText = bigSmall;
+      document.getElementById("pickupNumber").innerText = num;
+    }
+
+    function updatePeriodAndTimer(){
+      let now = new Date();
+      let seconds = now.getUTCSeconds();
+      let remaining = 60 - seconds;
+
+      let minutes = now.getUTCMinutes();
+      let totalMinutes = now.getUTCHours()*60 + minutes;
+
+      let datePart = now.toISOString().slice(0,10).replace(/-/g,"");
+      let period = datePart + "1000" + (10001 + totalMinutes);
+
+      document.getElementById("period").innerText = period;
+      document.getElementById("timer").innerText = 
+        "00:" + String(remaining).padStart(2,"0");
+
+      if(remaining === 60){ 
+        generatePrediction();
+      }
+    }
+  </script>
+
+</body>
+</html>
